@@ -4,6 +4,7 @@
 
 - **Приложение:** FMHAndroid («В Хосписе»)
 - **Пакет:** `ru.edu.qamid`
+- **Проект работает на:**  Android API 36
 - **Архитектура:** MVVM + Repository + Hilt DI + Jetpack Navigation
 - **Язык:** Kotlin
 - **Бэкенд:** `https://students.netoservices.ru/qamid-diplom-backend/`
