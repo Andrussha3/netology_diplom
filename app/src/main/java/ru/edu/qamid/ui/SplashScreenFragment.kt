@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.edu.qamid.BuildConfig
 import ru.edu.qamid.R
 import ru.edu.qamid.api.UserApi
 import ru.edu.qamid.auth.AppAuth
@@ -232,7 +233,7 @@ class SplashScreenFragment : Fragment(R.layout.fragment_splash_screen) {
         }
 
         lifecycleScope.launch {
-            delay(3_000)
+            delay(if (BuildConfig.DEBUG) 100 else 3_000)
             authViewModel.authorization()
         }
     }

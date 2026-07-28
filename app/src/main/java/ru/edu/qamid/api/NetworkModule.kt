@@ -54,6 +54,14 @@ object NetworkModule {
         val authInterceptor = AuthInterceptor(appAuth)
         val refreshAuthenticator = RefreshAuthenticator(authRepositoryProvider, appAuth)
         return OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                NetworkMonitor.onRequestStart()
+                try {
+                    chain.proceed(chain.request())
+                } finally {
+                    NetworkMonitor.onRequestEnd()
+                }
+            }
             .addInterceptor(interceptor)
             .addInterceptor(authInterceptor)
             .authenticator(refreshAuthenticator)
@@ -64,6 +72,14 @@ object NetworkModule {
     @Provides
     fun nonAuthorizedOkhttp(interceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                NetworkMonitor.onRequestStart()
+                try {
+                    chain.proceed(chain.request())
+                } finally {
+                    NetworkMonitor.onRequestEnd()
+                }
+            }
             .addInterceptor(interceptor)
             .build()
     }
@@ -73,6 +89,14 @@ object NetworkModule {
     fun refreshOkhttp(interceptor: HttpLoggingInterceptor, appAuth: AppAuth): OkHttpClient {
         val refreshInterceptor = RefreshInterceptor(appAuth)
         return OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                NetworkMonitor.onRequestStart()
+                try {
+                    chain.proceed(chain.request())
+                } finally {
+                    NetworkMonitor.onRequestEnd()
+                }
+            }
             .addInterceptor(refreshInterceptor)
             .addInterceptor(interceptor)
             .build()
