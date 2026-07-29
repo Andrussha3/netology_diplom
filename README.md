@@ -48,7 +48,6 @@
 app/src/androidTest/java/ru/edu/qamid/
 ├── CustomTestRunner.kt              # Allure + Hilt test runner
 ├── BaseTest.kt                      # Базовый класс тестов
-├── di/TestNetworkModule.kt          # MockWebServer DI-модуль
 ├── OkHttpIdlingResource.kt          # IdlingResource для OkHttp
 ├── page/                            # Page Object Model
 │   ├── AuthPage.kt
