@@ -138,6 +138,5 @@ task fetchAllureResults {
     }
 }
 
-tasks.matching { it.name == 'allureReport' }.all {
-    dependsOn fetchAllureResults
-}
+
+fetchAllureResults.finalizedBy 'allureReport'
