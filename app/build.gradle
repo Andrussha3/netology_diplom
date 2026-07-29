@@ -5,6 +5,11 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'io.qameta.allure'
+}
+
+allure {
+    version = '2.24.0'
 }
 
 android {
@@ -21,6 +26,13 @@ android {
         testInstrumentationRunner "ru.edu.qamid.CustomTestRunner"
     }
 
+    buildTypes {
+        debug {
+            buildConfigField "String", "BASE_URL", '"https://students.netoservices.ru/qamid-diplom-backend/"'
+            manifestPlaceholders = [requestLegacyExternalStorage: "true"]
+        }
+    }
+
     compileOptions {
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_17
@@ -34,17 +46,6 @@ android {
     buildFeatures {
         viewBinding true
         buildConfig true
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "BASE_URL", '"https://students.netoservices.ru/qamid-diplom-backend/"'
-        }
-        debug {
-            buildConfigField "String", "BASE_URL", '"https://students.netoservices.ru/qamid-diplom-backend/"'
-        }
     }
 }
 
@@ -103,4 +104,40 @@ dependencies {
     def allure_version = "2.4.0"
     androidTestImplementation "io.qameta.allure:allure-kotlin-android:$allure_version"
     androidTestImplementation "io.qameta.allure:allure-kotlin-junit4:$allure_version"
+    androidTestImplementation "io.qameta.allure:allure-kotlin-model:$allure_version"
+}
+
+task fetchAllureResults {
+    group = 'verification'
+    doLast {
+        def resultsDir = new File("${project.buildDir}/allure-results")
+        if (!resultsDir.exists()) resultsDir.mkdirs()
+        logger.lifecycle("Fetching Allure results to ${resultsDir}")
+
+        // List result files in Downloads (MediaStore.Downloads persists after uninstall)
+        def lsOut = new ByteArrayOutputStream()
+        exec {
+            commandLine 'adb', 'shell', 'ls', '/sdcard/Download/'
+            ignoreExitValue true
+            standardOutput = lsOut
+        }
+        // Filter for allure result files
+        def files = lsOut.toString().trim().readLines().findAll { it.contains('result.json') }
+        if (!files.isEmpty()) {
+            files.each { fname ->
+                exec {
+                    commandLine 'adb', 'pull', "/sdcard/Download/${fname.trim()}", resultsDir.absolutePath
+                    ignoreExitValue true
+                }
+            }
+            logger.lifecycle("Pulled ${files.size} files from Downloads")
+            return
+        }
+
+        logger.warn("No Allure result files found in /sdcard/Download/")
+    }
+}
+
+tasks.matching { it.name == 'allureReport' }.all {
+    dependsOn fetchAllureResults
 }
