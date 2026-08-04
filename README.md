@@ -6,6 +6,7 @@
 * **Тест-кейсы:** [Cases.csv](./Cases.csv)
 * **Чек-лист:** [Check.csv](./Check.csv)
 * **Отчёт по тестированию:** [Result.md](./Result.md)
+* **Баг-репорты:** [BugReports.xlsx](./BugReports.xlsx) 
 
 ---
 
